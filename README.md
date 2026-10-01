@@ -6,6 +6,8 @@
 
 仓库：<https://github.com/hxlls/dsh-everos-memory>（公开，匿名可下载）
 
+> **装好之后怎么用？** 看 **[USAGE.md](USAGE.md)** —— 你该对 Agent 说什么、记忆怎么归类、出问题怎么查。
+
 ## 一条命令安装
 
 把命令里的 `desktop` 换成目标 profile。**装完需要重启一次 Harness**，profile 才会重新组合。
@@ -15,7 +17,7 @@
 dsh plugin --profile desktop add https://github.com/hxlls/dsh-everos-memory.git
 
 # 2) 从 Release 的 tarball 直链安装 —— 不需要 Git，匿名可下载
-dsh plugin --profile desktop add https://github.com/hxlls/dsh-everos-memory/releases/download/v1.0.0/dsh-everos-memory-1.0.0.tgz
+dsh plugin --profile desktop add https://github.com/hxlls/dsh-everos-memory/releases/download/v1.0.1/dsh-everos-memory-1.0.1.tgz
 
 # 3) 从本地目录安装 —— 开发时最常用，装成 link，改代码即生效
 dsh plugin --profile desktop add C:\path\to\dsh-everos-memory
