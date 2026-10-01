@@ -4,46 +4,52 @@
 
 这是一个 DSH **bundle** 包：`package.json` 声明了 `dsh.bundle.patch`，安装后由 `cordis.patch.yml` 插入一个 Host 插件行，改动对该 profile 的所有会话生效。
 
+仓库：<https://github.com/hxlls/dsh-everos-memory>（公开，匿名可下载）
+
 ## 一条命令安装
 
-把下面命令里的 `<profile>` 换成目标 profile（桌面版是 `desktop`）。**装完需要重启一次 Harness**，profile 才会重新组合。
+把命令里的 `desktop` 换成目标 profile。**装完需要重启一次 Harness**，profile 才会重新组合。
 
 ```powershell
-# 1) 从 GitHub 安装（需要本机有 Git）
-dsh plugin --profile desktop add github:<你的用户名>/dsh-everos-memory
+# 1) 从 GitHub 源码安装 —— 需要本机有 Git（pnpm 用 git 拉取）
+dsh plugin --profile desktop add https://github.com/hxlls/dsh-everos-memory.git
 
-# 2) 从远程 tarball 安装（不需要 Git，适合 GitHub Release 资源或任意 https 直链）
-dsh plugin --profile desktop add https://github.com/<你的用户名>/dsh-everos-memory/releases/download/v1.0.0/dsh-everos-memory-1.0.0.tgz
+# 2) 从 Release 的 tarball 直链安装 —— 不需要 Git，匿名可下载
+dsh plugin --profile desktop add https://github.com/hxlls/dsh-everos-memory/releases/download/v1.0.0/dsh-everos-memory-1.0.0.tgz
 
-# 3) 从本地目录安装（开发时最常用，装成 link，改代码即生效）
+# 3) 从本地目录安装 —— 开发时最常用，装成 link，改代码即生效
 dsh plugin --profile desktop add C:\path\to\dsh-everos-memory
 ```
 
 `dsh plugin add` 会做三件事：在 profile 里执行 `pnpm add`、把包名追加进 `package.json` 的 `dsh.profile.bundles`、由 loader 校验能否加载。卸载用 `dsh plugin --profile desktop remove @local/dsh-everos-memory`。
+
+### 别用 `github:owner/repo` 简写
+
+npm/pnpm 会把 `github:owner/repo` 解析成 **SSH** 地址（`git+ssh://git@github.com/...`），公开仓库用它会因为缺少 SSH key 而失败。要匿名安装就写完整的 **HTTPS** 地址，也就是上面方式 1 那种 `https://github.com/…/….git`。
 
 ### 找不到 `dsh` 命令时
 
 桌面版默认不把 `dsh` 放进 PATH，可以直接调用安装目录里的启动器（注意 `DeepSeek Harness` 中间有空格，路径要加引号）：
 
 ```powershell
-& "G:\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd" plugin --profile desktop add github:<你的用户名>/dsh-everos-memory
+& "G:\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd" plugin --profile desktop add https://github.com/hxlls/dsh-everos-memory.git
 ```
 
 ### 没有 Git 时
 
-`github:` 形式的 spec 由 pnpm 调用 `git` 拉取，DSH 也会先用 `git ls-remote` 预检，所以**必须装 Git**；一条命令即可：
+方式 1 由 pnpm 调用 `git` 拉取，DSH 也会先用 `git ls-remote` 预检，所以需要装 Git：
 
 ```powershell
 winget install --id Git.Git -e
 ```
 
-不想装 Git 就用上面的 **方式 2**（远程 tarball），pnpm 直接走 HTTPS，不需要 Git。
+不想装 Git 就用方式 2（tarball 直链），pnpm 直接走 HTTPS，**完全不需要 Git**；本地已有打包好的 tgz 时也可以直接 `dsh plugin add <本地 tgz 路径>`。
 
 ### 在对话里让它装
 
-已经装好 Git（或用本地路径/tarball）后，直接在对话里说一句：
+直接在对话里说一句：
 
-> 帮我装一下 https://github.com/xxx/dsh-everos-memory
+> 帮我装一下 https://github.com/hxlls/dsh-everos-memory.git
 
 Agent 会调用 `dsh plugin --profile desktop add <spec>`（会请你批准一次越权写入，因为要写 profile 目录）。如果这个 profile 启用了 `plugin_manager` 工具，也可以让它走官方的 `install_bundle`。
 
@@ -107,24 +113,17 @@ Agent 会调用 `dsh plugin --profile desktop add <spec>`（会请你批准一�
 
 所以两个 peer 都写进 `peerDependencies`（满足解析路由与版本兼容性校验），再用 `peerDependenciesMeta.*.optional = true` 让 pnpm 永不尝试安装它们。
 
-## 发布到 GitHub
+## 发新版本
 
-仓库根目录就是包根目录，`github:owner/repo` 能直接装。首次推送：
-
-```powershell
-cd C:\Users\11727\Documents\deepseek-harness\default-workspace\everos-memory
-git init -b main
-git add -A
-git commit -m "feat: EverOS memory bundle for DeepSeek Harness"
-git remote add origin https://github.com/<你的用户名>/dsh-everos-memory.git
-git push -u origin main
-```
-
-想要「不装 Git 也能一条命令装」，就再发一个 Release，把 `pnpm pack` 生成的 tarball 传上去：
+仓库根目录就是包根目录，所以源码方式可以直接装。发新版时改 `package.json` 的 `version`，提交后打 tag 并附上打包产物：
 
 ```powershell
-pnpm pack        # 生成 dsh-everos-memory-1.0.0.tgz
+pnpm pack                                  # 生成 dsh-everos-memory-<version>.tgz
+git add -A; git commit -m "chore: release v<version>"; git push
+# 再到 GitHub Releases 建一个 v<version> 的 release，把 tgz 作为附件传上去
 ```
+
+Release 附件的直链形如 `https://github.com/hxlls/dsh-everos-memory/releases/download/v<version>/dsh-everos-memory-<version>.tgz`，安装命令里的 URL 要跟着改。
 
 ## 许可
 
