@@ -1,0 +1,20 @@
+# This bundle's own layer: it inserts the EverOS memory plugin row. A profile
+# patch that targets `id: everos-memory` replaces this row's complete `config`,
+# so tune the address and identity there instead of editing this file.
+- insert:
+    - id: everos-memory
+      name: '@local/dsh-everos-memory'
+      config:
+        baseUrl: 'http://192.168.1.35:8000'
+        userId: 'dsh-user'
+        defaultSessionId: 'dsh-session'
+        defaultMethod: 'hybrid'
+        searchTopK: 10
+        includeProfile: true
+        enableHealth: true
+        enableWrite: true
+        enableSearch: true
+        enableGet: true
+        promptGuidance: true
+        requestTimeoutMs: 15000
+        toolTimeoutMs: 30000

@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "EverOS 记忆",
+    "description": "接入自托管 EverOS（Memory API v2）：植入长期记忆、语义检索、按类型拉取，并提供健康检查。"
+  }
+}

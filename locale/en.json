@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "EverOS Memory",
+    "description": "Connect a self-hosted EverOS (Memory API v2): add memories, search them semantically, fetch them by type, and check service health."
+  }
+}

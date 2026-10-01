@@ -1,0 +1,6 @@
+# Keep the repository's line endings stable regardless of the checkout platform:
+# these are hand-written text files that also run on Linux/macOS.
+* text=auto eol=lf
+*.ico binary
+*.png binary
+*.tgz binary
